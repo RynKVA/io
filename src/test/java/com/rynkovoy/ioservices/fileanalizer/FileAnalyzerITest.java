@@ -1,5 +1,7 @@
-package fileanalizer;
+package com.rynkovoy.ioservices.fileanalizer;
 
+import com.rynkovoy.ioservices.fileanalizer.FileAnalyzer;
+import com.rynkovoy.ioservices.fileanalizer.NeededContent;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -17,6 +19,7 @@ class FileAnalyzerITest {
     private File emptyFile;
     private final String word = "собака";
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     @BeforeEach
     void before() throws IOException {
         File directory = new File("src", "testiolab");
@@ -40,7 +43,8 @@ class FileAnalyzerITest {
     @DisplayName("Analyzed file with text and found three touching word \"собака\", return 3")
     void countWordThree() throws IOException {
         try(FileInputStream stream = new FileInputStream(fileWithTextContainWord.getPath())) {
-            assertEquals(3, FileAnalyzer.countSpecifiedWord(stream.readAllBytes(), word));
+            ArrayList<String> neededSentences = FileAnalyzer.divineOnNeededSentences(stream.readAllBytes(), word);
+            assertEquals(3, FileAnalyzer.countSpecifiedWord(neededSentences, word));
         }
     }
 
@@ -48,7 +52,8 @@ class FileAnalyzerITest {
     @DisplayName("Analyzed file without finding word, return 0")
     void countWordZero() throws IOException {
         try (FileInputStream stream = new FileInputStream(fileWithNotContainWord.getPath())){
-            assertEquals(0, FileAnalyzer.countSpecifiedWord(stream.readAllBytes(), word));
+            ArrayList<String> neededSentences = FileAnalyzer.divineOnNeededSentences(stream.readAllBytes(), word);
+            assertEquals(0, FileAnalyzer.countSpecifiedWord(neededSentences, word));
         }
     }
 
@@ -56,7 +61,8 @@ class FileAnalyzerITest {
     @DisplayName("Analyzed empty file, return 0")
     void countWordInEmptyFileReturnZero() throws IOException {
         try (FileInputStream stream = new FileInputStream(emptyFile.getPath())) {
-            assertEquals(0, FileAnalyzer.countSpecifiedWord(stream.readAllBytes(), word));
+            ArrayList<String> neededSentences = FileAnalyzer.divineOnNeededSentences(stream.readAllBytes(), word);
+            assertEquals(0, FileAnalyzer.countSpecifiedWord(neededSentences, word));
         }
     }
 
@@ -114,6 +120,7 @@ class FileAnalyzerITest {
         assertEquals(3, neededContent.getCountSpecifiedWord());
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     @AfterEach
     void after() {
         fileWithTextContainWord.delete();

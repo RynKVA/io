@@ -1,4 +1,4 @@
-package fileanalizer;
+package com.rynkovoy.ioservices.fileanalizer;
 
 import java.util.ArrayList;
 

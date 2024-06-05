@@ -1,9 +1,9 @@
-package filemanager;
+package com.rynkovoy.ioservices.filemanager;
+
 
 import org.junit.jupiter.api.*;
 
 import java.io.*;
-import java.nio.charset.StandardCharsets;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -29,11 +29,11 @@ class FileManagerITest {
         textFile2 = new File(secondDirectory.getPath(), "TestTextFile2");
         textFile3 = new File(secondDirectory.getPath(), "TestTextFile3");
         try (FileOutputStream fileOutputStream = new FileOutputStream(textFile);
-             FileOutputStream fileOutputStream1 = new FileOutputStream(textFile2);
-             FileOutputStream fileOutputStream2 = new FileOutputStream(textFile3)) {
+             FileOutputStream fileOutputStream2 = new FileOutputStream(textFile2);
+             FileOutputStream fileOutputStream3 = new FileOutputStream(textFile3)) {
             fileOutputStream.write("Hello dear reader from textFile!".getBytes());
-            fileOutputStream1.write("Hello dear reader from textFile2!".getBytes());
-            fileOutputStream2.write("Hello dear reader from textFile3!".getBytes());
+            fileOutputStream2.write("Hello dear reader from textFile2!".getBytes());
+            fileOutputStream3.write("Hello dear reader from textFile3!".getBytes());
         }
         File testDirectory = new File(secondDirectory.getPath(), "Dir1");
         testDirectory.mkdir();
@@ -206,7 +206,7 @@ class FileManagerITest {
         FileInputStream fileInputStream = new FileInputStream(targetFile.getPath());
         try (fileInputStream) {
             byte[] bytesOfText = fileInputStream.readAllBytes();
-            assertEquals("Hello dear reader from textFile!", new String(bytesOfText, StandardCharsets.UTF_8));
+            assertEquals("Hello dear reader from textFile!", new String(bytesOfText));
         }
 
         //delete copied file

@@ -1,4 +1,4 @@
-package filemanager;
+package com.rynkovoy.ioservices.filemanager;
 
 import java.io.*;
 
@@ -7,6 +7,9 @@ public class FileManager {
         int countFiles = 0;
         File fileOrDirectory = new File(path);
         checkExistFile(fileOrDirectory);
+        if (fileOrDirectory.isFile()){
+            return 1;
+        }
         File[] files = fileOrDirectory.listFiles();
         if (files != null) {
             for (File file : files) {
@@ -17,9 +20,8 @@ public class FileManager {
                     countFiles++;
                 }
             }
-            return countFiles;
         }
-        return 1;
+        return countFiles;
     }
 
     public static int countDirs(String path) throws IOException {
@@ -59,6 +61,7 @@ public class FileManager {
         }
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     private static void copyDir(File directoryFrom, File pathTo) throws IOException {
         pathTo.mkdir();
         File[] files = directoryFrom.listFiles();

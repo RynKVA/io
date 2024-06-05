@@ -1,22 +1,20 @@
-package fileanalizer;
+package com.rynkovoy.ioservices.fileanalizer;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.NoSuchElementException;
-import java.util.Scanner;
+import java.util.*;
 import java.util.regex.Pattern;
 
 public class FileAnalyzer {
     private static final Pattern SENTENCE_PATTERN = Pattern.compile("((?<=[.!?]))");
 
     public static NeededContent fileAnalyzer() throws IOException {
-        Scanner scanner = new Scanner(System.in);
-        String path = scanner.nextLine();
-        String word = scanner.nextLine();
-        return fileAnalyzer(path, word);
+        try (Scanner scanner = new Scanner(System.in)) {
+            String path = scanner.nextLine();
+            String word = scanner.nextLine();
+            return fileAnalyzer(path, word);
+        }
     }
 
     static NeededContent fileAnalyzer(String path, String word) throws IOException {
@@ -24,31 +22,29 @@ public class FileAnalyzer {
         try (FileInputStream stream = new FileInputStream(path)) {
             byte[] allBytesFromFile = stream.readAllBytes();
             ArrayList<String> neededSentences = divineOnNeededSentences(allBytesFromFile, word);
-            int countSpecifiedWord = countSpecifiedWord(allBytesFromFile, word);
+            int countSpecifiedWord = countSpecifiedWord(neededSentences, word);
             return new NeededContent(neededSentences, countSpecifiedWord);
         }
     }
 
-    static int countSpecifiedWord(byte[] allBytes, String word) {
-        int index = 0;
+    static int countSpecifiedWord(List<String> neededSentences, String word) {
         int countWord = 0;
-        byte[] wordBytes = word.getBytes();
-        for (byte oneByte : allBytes) {
-            if (oneByte == wordBytes[index]) {
-                index++;
-                if (index == wordBytes.length) {
-                    countWord++;
-                    index = 0;
+        for (String neededSentence : neededSentences) {
+            int index = 0;
+            while (index != -1) {
+                index = neededSentence.indexOf(word, index);
+                if (index == -1) {
+                    continue;
                 }
-            } else {
-                index = 0;
+                countWord++;
+                index++;
             }
         }
         return countWord;
     }
 
     static ArrayList<String> divineOnNeededSentences(byte[] allBytes, String word) {
-        String content = new String(allBytes, StandardCharsets.UTF_8);
+        String content = new String(allBytes);
         String[] splitSentences = SENTENCE_PATTERN.split(content);
         ArrayList<String> contentWithNeededWord = new ArrayList<>();
         for (String splitSentence : splitSentences) {
