@@ -1,11 +1,13 @@
 package com.rynkovoy.iorealization.bytearraystreams;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 public class ByteArrayInputStream extends InputStream {
     private final byte[] buffer;
     private final int current;
     private int position;
+    private boolean isClosed;
 
     public ByteArrayInputStream(byte[] buffer) {
         this.buffer = buffer;
@@ -20,12 +22,26 @@ public class ByteArrayInputStream extends InputStream {
     }
 
     @Override
-    public int read(byte[] array) {
+    public int read() throws IOException {
+        if (isClosed){
+            throw new IOException("Stream is closed!");
+        }
+        return (position < current) ? (buffer[position++] & 0xFF) : -1;
+    }
+
+    @Override
+    public int read(byte[] array) throws IOException {
+        if (isClosed){
+            throw new IOException("Stream is closed!");
+        }
         return read(array, 0, array.length);
     }
 
     @Override
-    public int read(byte[] array, int offSet, int length) {
+    public int read(byte[] array, int offSet, int length) throws IOException {
+        if (isClosed){
+            throw new IOException("Stream is closed!");
+        }
         validationParameters(array.length, offSet, length);
         int difference = current - position;
         if (position > current) {
@@ -43,8 +59,8 @@ public class ByteArrayInputStream extends InputStream {
     }
 
     @Override
-    public int read() {
-        return (position < current) ? (buffer[position++] & 0xFF) : -1;
+    public void close() {
+        isClosed = true;
     }
 
     private void validationParameters(int arrayLength, int offSet, int length) {

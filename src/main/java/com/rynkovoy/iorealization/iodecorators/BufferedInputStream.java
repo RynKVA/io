@@ -49,7 +49,7 @@ public class BufferedInputStream extends InputStream {
             }
             return length;
         }
-        System.arraycopy(buffer, 0, array, offSet, length);
+        System.arraycopy(buffer, position, array, offSet, length);
         return length;
     }
 

@@ -1,10 +1,12 @@
 package com.rynkovoy.iorealization.bytearraystreams;
 
+import java.io.IOException;
 import java.io.OutputStream;
 
 public class ByteArrayOutputStream extends OutputStream {
     private byte[] buffer;
     private int count;
+    private boolean isClosed;
 
     public ByteArrayOutputStream() {
         this(32);
@@ -18,12 +20,18 @@ public class ByteArrayOutputStream extends OutputStream {
     }
 
     @Override
-    public void write(byte[] array) {
+    public void write(byte[] array) throws IOException {
+        if (isClosed){
+            throw new IOException("Stream is closed!");
+        }
         write(array, 0, array.length);
     }
 
     @Override
-    public void write(byte[] array, int offSet, int length) {
+    public void write(byte[] array, int offSet, int length) throws IOException {
+        if (isClosed){
+            throw new IOException("Stream is closed!");
+        }
         validationParameters(array.length, offSet, length);
         grow(offSet + length);
         System.arraycopy(array, offSet, buffer, count, length);
@@ -31,16 +39,27 @@ public class ByteArrayOutputStream extends OutputStream {
     }
 
     @Override
-    public void write(int b) {
+    public void write(int b) throws IOException {
+        if (isClosed){
+            throw new IOException("Stream is closed!");
+        }
         grow(count + 1);
         buffer[count] = (byte) b;
         count += 1;
     }
 
-    public byte[] toByteArray() {
+    public byte[] toByteArray() throws IOException {
+        if (isClosed){
+            throw new IOException("Stream is closed!");
+        }
         byte[] targetArray = new byte[buffer.length];
         System.arraycopy(buffer, 0, targetArray, 0, buffer.length);
         return targetArray;
+    }
+
+    @Override
+    public void close() {
+        isClosed = true;
     }
 
     private void grow(int count) {
