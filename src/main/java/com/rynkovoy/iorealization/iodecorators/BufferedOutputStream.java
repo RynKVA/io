@@ -39,6 +39,7 @@ public class BufferedOutputStream extends OutputStream {
             flush();
             if (length >= buffer.length) {
                 target.write(array, offSet, length);
+                return;
             }
         }
         System.arraycopy(array, offSet, buffer, position, length);

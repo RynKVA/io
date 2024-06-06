@@ -79,6 +79,25 @@ public class IODecoratorsITest {
     }
 
     @Test
+    @DisplayName("When use method read with parameter array,offSet and length and target array length more than buffer length then byte from inputStream write in buffer and filling target array from offSet position on current value bytes and do recursive method read with new offSet")
+    void testReadByteArrayWithOffSetAndLengthParametersWhenBufferLessThanTargetArray() throws IOException {
+        BufferedInputStream bufferedInputStream = new BufferedInputStream(new FileInputStream("src/io/inputtest"), 3);
+        byte[] array = new byte[7];
+        int count = bufferedInputStream.read(array, 1, 5);
+
+        assertEquals(5, count);
+        assertEquals(0, array[0]);
+        assertEquals('h', (char) array[1]);
+        assertEquals('e', (char) array[2]);
+        assertEquals('l', (char) array[3]);
+        assertEquals('l', (char) array[4]);
+        assertEquals('o', (char) array[5]);
+        assertEquals(0, array[6]);
+
+        bufferedInputStream.close();
+    }
+
+    @Test
     @DisplayName("When use method write, then write byte in buffer, then method flush drop all bytes in outputStream")
     void testWriteFlushAndReadWithoutParameters() throws IOException {
         try (BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(new FileOutputStream("src/io/outputtest"));
@@ -127,6 +146,24 @@ public class IODecoratorsITest {
             bufferedOutputStream.write(array, 1, 4);
             bufferedOutputStream.flush();
 
+            assertEquals('e', (char) bufferedInputStream.read());
+            assertEquals('l', (char) bufferedInputStream.read());
+            assertEquals('l', (char) bufferedInputStream.read());
+            assertEquals('o', (char) bufferedInputStream.read());
+            assertEquals(-1, bufferedInputStream.read());
+        }
+    }
+
+
+    @Test
+    @DisplayName("When use method write with parameter array and buffer length less than target array then doing flush and all bytes from target array drop in output stream")
+    void testWriteByteArrayWhenBufferLengthLessThanTargetArrayLength() throws IOException {
+        try (BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(new FileOutputStream("src/io/outputtest"), 4);
+             BufferedInputStream bufferedInputStream = new BufferedInputStream(new FileInputStream("src/io/outputtest"))) {
+            byte[] array = {104, 101, 108, 108, 111};
+            bufferedOutputStream.write(array);
+
+            assertEquals('h', (char) bufferedInputStream.read());
             assertEquals('e', (char) bufferedInputStream.read());
             assertEquals('l', (char) bufferedInputStream.read());
             assertEquals('l', (char) bufferedInputStream.read());
